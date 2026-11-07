@@ -13,7 +13,8 @@ description: 给一个关键词，用 Playwright 自动在卖家精灵采集亚�
 pip install -r scripts/requirements.txt && playwright install chromium   # 仅首次
 python scripts/collect.py "<关键词>"            # 输出到 ~/SellerSprite调研/<关键词>/
 ```
-可选：`--cdp http://localhost:9222`（接管你已登录的 Chrome，无需重新登录；Chrome 需用 `--remote-debugging-port=9222` 启动）、`--recon`（侦察模式，保存页面截图和控件清单，用于适配改版）、`--out 目录`、`--site 美国站`、`--step products|months|keywords|conv`（只跑某一步）。
+可选：`--cdp http://localhost:9222`（接管你已登录的 Chrome，无需重新登录；Chrome 需用 `--remote-debugging-port=9222` 启动）、`--recon`（侦察模式，保存页面截图和控件清单，用于适配改版）、`--out 目录`、`--site CA|US`（默认 CA）、`--step products|months|keywords|conv`（只跑某一步）。
+竞品页/拓词页/转化率页均用网址参数直达（`/competitor-lookup`、`/traffic/extend`、`/keyword-conversion-rate`），不再点下拉框。导出每天有次数上限（约 48 次，一个关键词用 15 次），脚本导出前会读取剩余次数。
 首次会弹出浏览器，用户手动登录卖家精灵，登录态保存在 `~/.sellersprite-profile`。
 
 ## 流程（与《亚马逊市场大盘调研》文档一致）

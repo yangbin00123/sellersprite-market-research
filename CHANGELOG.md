@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.0 - 2026-11-07
+- 适配新版页面：竞品页（近30天 `monthName=bsr_sales_nearly`、月表 `bsr_sales_monthly_YYYYMM`）、拓词页 `/traffic/extend`、转化率页 `/keyword-conversion-rate` 全部改用网址参数
+- 默认站点改为 CA，可用 `--site` 切换
+- 导出：先尝试直接下载，失败则走"我的导出"异步下载；导出前读取当日剩余次数
+- 关键词累计占比改用 Decimal，避免 95% 边界误差
+- 已知待验证：US 的 marketId、拓词页参数、"我的导出"入口选择器
+
 ## v0.2.0 - 2026-11-07
 - 下载的表格保持卖家精灵原文件名，不再改名
 - 关键词文件夹只保留需要的表格；截图、状态、关键词清单移到 `_logs/`
