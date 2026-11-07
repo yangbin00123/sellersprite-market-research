@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.3.1 - 2026-11-07
+- 异步导出改为在导出页 `/v2/export-log` 下载最新一条
+
 ## v0.3.0 - 2026-11-07
 - 适配新版页面：竞品页（近30天 `monthName=bsr_sales_nearly`、月表 `bsr_sales_monthly_YYYYMM`）、拓词页 `/traffic/extend`、转化率页 `/keyword-conversion-rate` 全部改用网址参数
 - 默认站点改为 CA，可用 `--site` 切换

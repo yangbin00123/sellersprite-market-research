@@ -18,6 +18,7 @@ BASE = "https://www.sellersprite.com/v3"
 URL_COMPETITOR = BASE + "/competitor-lookup"
 URL_EXPAND = BASE + "/traffic/extend"
 URL_CONV = BASE + "/keyword-conversion-rate"
+URL_EXPORT_LOG = "https://www.sellersprite.com/v2/export-log"   # 我的导出
 MARKET_ID = {"US": 1, "CA": 7}   # 转化率页 marketId（CA=7 已验证，US 待验证）
 TOP_ASIN = 20          # 取月销量前 N 个商品做关键词反查
 TRAFFIC_CUM = 0.95     # 累计流量占比阈值
@@ -107,25 +108,21 @@ class Bot:
             if c.count(): c.first.click(); return
 
     def download_from_my_exports(self, tag):
-        """异步导出：打开'我的导出'，等最新一条完成后下载。"""
+        """异步导出：打开导出页 URL_EXPORT_LOG，等最新一条完成后点'下载'。"""
         self.shot(f"{tag}_after_export")
-        link = self.p.get_by_text(re.compile("我的导出|导出记录|下载中心|下载任务")).locator("visible=true")
-        if link.count() == 0: sys.exit(f"导出后未下载也找不到'我的导出'入口：{tag}（见 {self.logs} 截图，请把截图发给开发者）")
-        pg = self.p
-        try:                                    # 可能新开标签；没有则在原页
-            with self.p.context.expect_page(timeout=5000) as np_:
-                link.first.click()
-            pg = np_.value
-        except PWTimeout:
-            pass
-        for _ in range(40):                     # 最多等约 2 分钟
-            pg.wait_for_timeout(3000)
-            b = pg.get_by_text(re.compile(r"^\s*下载\s*$")).locator("visible=true")
-            if b.count():
-                with pg.expect_download(timeout=60000) as d: b.first.click()
-                return d.value
-            pg.reload(wait_until="domcontentloaded")
-        sys.exit(f"等待导出完成超时：{tag}")
+        pg = self.p.context.new_page()
+        try:
+            for _ in range(40):                 # 最多等约 2 分钟
+                pg.goto(URL_EXPORT_LOG, wait_until="domcontentloaded"); pg.wait_for_timeout(3000)
+                b = pg.get_by_text(re.compile(r"^\s*下载\s*$")).locator("visible=true")
+                if b.count():                   # 列表按时间倒序，第一条即刚导出的
+                    with pg.expect_download(timeout=60000) as d: b.first.click()
+                    return d.value
+                pg.wait_for_timeout(3000)
+            pg.screenshot(path=str(self.logs / f"debug_{tag}_exportlog.png"), full_page=True)
+            sys.exit(f"等待导出完成超时：{tag}（见 {self.logs} 截图）")
+        finally:
+            pg.close()
 
     # ---------- 竞品表（全部用网址参数，不点下拉框）----------
     def comp_url(self, kw, month):
